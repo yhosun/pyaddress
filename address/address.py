@@ -96,7 +96,7 @@ class AddressParser(object):
         # if self.logger: self.logger.debug("End street2coords")
         addresses = []
         # if self.logger: self.logger.debug("Multi Addresses: {0}".format(multi_address))
-        for address, dstk_return in multi_address.items():
+        for address, dstk_return in list(multi_address.items()):
             try:
                 if dstk_return is None:
                     # if self.logger: self.logger.debug("DSTK None return for: {0}".format(address))
@@ -300,17 +300,17 @@ class Address:
         """
         # print "zip", self.zip
         if len(token) == 2 and self.state is None:
-            if token.capitalize() in self.parser.states.keys():
+            if token.capitalize() in list(self.parser.states.keys()):
                 self.state = self._clean(self.parser.states[token.capitalize()])
                 return True
-            elif token.upper() in self.parser.states.values():
+            elif token.upper() in list(self.parser.states.values()):
                 self.state = self._clean(token.upper())
                 return True
         if self.state is None and self.street_suffix is None and len(self.comma_separated_address) > 1:
-            if token.capitalize() in self.parser.states.keys():
+            if token.capitalize() in list(self.parser.states.keys()):
                 self.state = self._clean(self.parser.states[token.capitalize()])
                 return True
-            elif token.upper() in self.parser.states.values():
+            elif token.upper() in list(self.parser.states.values()):
                 self.state = self._clean(token.upper())
                 return True
         return False
@@ -334,13 +334,13 @@ class Address:
             return False
         # Multi word cities
         if self.city is not None and self.street_suffix is None and self.street is None:
-            print "Checking for multi part city", token.lower(), token.lower() in shortened_cities.keys()
+            print("Checking for multi part city", token.lower(), token.lower() in list(shortened_cities.keys()))
             if token.lower() + ' ' + self.city in self.parser.cities:
                 self.city = self._clean((token.lower() + ' ' + self.city).capitalize())
                 return True
-            if token.lower() in shortened_cities.keys():
+            if token.lower() in list(shortened_cities.keys()):
                 token = shortened_cities[token.lower()]
-                print "Checking for shorted multi part city", token.lower() + ' ' + self.city
+                print("Checking for shorted multi part city", token.lower() + ' ' + self.city)
                 if token.lower() + ' ' + self.city.lower() in self.parser.cities:
                     self.city = self._clean(token.capitalize() + ' ' + self.city.capitalize())
                     return True
@@ -383,11 +383,11 @@ class Address:
         # print "Suffix check", token, "suffix", self.street_suffix, "street", self.street
         if self.street_suffix is None and self.street is None:
             # print "upper", token.upper()
-            if token.upper() in self.parser.suffixes.keys():
+            if token.upper() in list(self.parser.suffixes.keys()):
                 suffix = self.parser.suffixes[token.upper()]
                 self.street_suffix = self._clean(suffix.capitalize() + '.')
                 return True
-            elif token.upper() in self.parser.suffixes.values():
+            elif token.upper() in list(self.parser.suffixes.values()):
                 self.street_suffix = self._clean(token.capitalize() + '.')
                 return True
         return False
@@ -417,7 +417,7 @@ class Address:
         Finds street prefixes, such as N. or Northwest, before a street name. Standardizes to 1 or two letters, followed
         by a period.
         """
-        if self.street and not self.street_prefix and token.lower().replace('.', '') in self.parser.prefixes.keys():
+        if self.street and not self.street_prefix and token.lower().replace('.', '') in list(self.parser.prefixes.keys()):
             self.street_prefix = self._clean(self.parser.prefixes[token.lower().replace('.', '')])
             return True
         return False
@@ -508,10 +508,10 @@ class Address:
             return item.encode("utf-8", "replace")
 
     def __repr__(self):
-        return unicode(self)
+        return str(self)
 
     def __str__(self):
-        return unicode(self)
+        return str(self)
 
     def __unicode__(self):
         address_dict = {
@@ -526,8 +526,8 @@ class Address:
             "zip": self.zip
         }
         # print "Address Dict", address_dict
-        return u"Address - House number: {house_number} Prefix: {street_prefix} Street: {street} Suffix: {street_suffix}" \
-               u" Apartment: {apartment} City,State,Zip: {city}, {state} {zip}".format(**address_dict)
+        return "Address - House number: {house_number} Prefix: {street_prefix} Street: {street} Suffix: {street_suffix}" \
+               " Apartment: {apartment} City,State,Zip: {city}, {state} {zip}".format(**address_dict)
 
     def dstk_parse(self, address, parser, pre_parsed_address=None):
         """
@@ -607,12 +607,12 @@ class Address:
         if split_addr[0] == self.house_number:
             split_addr = split_addr[1:]
         if self.logger: self.logger.debug("Checking {0} for suffixes".format(split_addr[-1].upper()))
-        if split_addr[-1].upper() in parser.suffixes.keys() or split_addr[-1].upper() in parser.suffixes.values():
+        if split_addr[-1].upper() in list(parser.suffixes.keys()) or split_addr[-1].upper() in list(parser.suffixes.values()):
             self.street_suffix = split_addr[-1]
             split_addr = split_addr[:-1]
         if self.logger: self.logger.debug("Checking {0} for prefixes".format(split_addr[0].lower()))
-        if split_addr[0].lower() in parser.prefixes.keys() or split_addr[0].upper() in parser.prefixes.values() or \
-                                split_addr[0].upper() + '.' in parser.prefixes.values():
+        if split_addr[0].lower() in list(parser.prefixes.keys()) or split_addr[0].upper() in list(parser.prefixes.values()) or \
+                                split_addr[0].upper() + '.' in list(parser.prefixes.values()):
             if split_addr[0][-1] == '.':
                 self.street_prefix = split_addr[0].upper()
             else:
@@ -654,17 +654,17 @@ class Address:
         normalized_address = []
         if self.logger: self.logger.debug("Normalizing Address: {0}".format(address))
         for token in address.split():
-            if token.upper() in self.parser.suffixes.keys():
+            if token.upper() in list(self.parser.suffixes.keys()):
                 normalized_address.append(self.parser.suffixes[token.upper()].lower())
-            elif token.upper() in self.parser.suffixes.values():
+            elif token.upper() in list(self.parser.suffixes.values()):
                 normalized_address.append(token.lower())
-            elif token.upper().replace('.', '') in self.parser.suffixes.values():
+            elif token.upper().replace('.', '') in list(self.parser.suffixes.values()):
                 normalized_address.append(token.lower().replace('.', ''))
-            elif token.lower() in self.parser.prefixes.keys():
+            elif token.lower() in list(self.parser.prefixes.keys()):
                 normalized_address.append(self.parser.prefixes[token.lower()].lower())
-            elif token.upper() in self.parser.prefixes.values():
+            elif token.upper() in list(self.parser.prefixes.values()):
                 normalized_address.append(token.lower()[:-1])
-            elif token.upper() + '.' in self.parser.prefixes.values():
+            elif token.upper() + '.' in list(self.parser.prefixes.values()):
                 normalized_address.append(token.lower())
             else:
                 normalized_address.append(token.lower())
@@ -694,4 +694,4 @@ class DSTKConfidenceTooLowException(Exception):
 
 if __name__ == "__main__":
     ap = AddressParser()
-    print ap.parse_address(" ".join(sys.argv[1:]))
+    print(ap.parse_address(" ".join(sys.argv[1:])))
