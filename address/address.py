@@ -182,7 +182,7 @@ class Address:
 #            print "Unmatched token: ", token
             if self.check_apartment_number(token):
                 continue
-            print "Unmatched token: ", token
+            print("Unmatched token: ", token)
 #            print "Original address: ", self.original
             self.unmatched = True
 
@@ -232,10 +232,10 @@ class Address:
         Check if state is in either the keys or values of our states list. Must come before the suffix.
         """
         if self.state is None and self.street_suffix is None and len(self.comma_separated_address) > 1:
-            if token.capitalize() in self.parser.states.keys():
+            if token.capitalize() in list(self.parser.states.keys()):
                 self.state = self.parser.states[token.capitalize()]
                 return True
-            elif token.upper() in self.parser.states.values():
+            elif token.upper() in list(self.parser.states.values()):
                 self.state = token.upper()
                 return True
         return False
@@ -286,11 +286,11 @@ class Address:
         """
         # Suffix must come before street
         if self.street_suffix is None and self.street is None:
-            if token.upper() in self.parser.suffixes.keys():
+            if token.upper() in list(self.parser.suffixes.keys()):
                 suffix = self.parser.suffixes[token.upper()]
                 self.street_suffix = suffix.capitalize() + '.'
                 return True
-            elif token.upper() in self.parser.suffixes.values():
+            elif token.upper() in list(self.parser.suffixes.values()):
                 self.street_suffix = token.capitalize() + '.'
                 return True
         return False
@@ -320,7 +320,7 @@ class Address:
         Finds street prefixes, such as N. or Northwest, before a street name. Standardizes to 1 or two letters, followed
         by a period.
         """
-        if self.street and not self.street_prefix and token.lower().replace('.', '') in self.parser.prefixes.keys():
+        if self.street and not self.street_prefix and token.lower().replace('.', '') in list(self.parser.prefixes.keys()):
             self.street_prefix = self.parser.prefixes[token.lower().replace('.', '')]
             return True
         return False
